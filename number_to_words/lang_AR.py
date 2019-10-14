@@ -3,9 +3,9 @@ from decimal import Decimal
 from math import floor
 
 CURRENCIES = {
-    'SR': [("ريال", "ريال", "ريالات", "ريالاً"), ("هللة", "هللتان", "هللات", "هللة")],
+    'SAR': [("ريال", "ريال", "ريالات", "ريالاً"), ("هللة", "هللتان", "هللات", "هللة")],
     'USD': [("دولار", "دولار", "دولارات", "دولاراً"), ("سنت", "سنتان", "سنتات", "سنتاً")],
-    'EURO': [("يورو", "يورو", "يورو", "يورو"), ("سنت", "سنتان", "سنتات", "سنتاً")],
+    'EUR': [("يورو", "يورو", "يورو", "يورو"), ("سنت", "سنتان", "سنتات", "سنتاً")],
     'EGP': [("جنيه", "جنيهان", "جنيهات", "جنيهاً"), ("قرش", "قرشان", "قروش", "قرش")],
     'KWD': [("دينار", "ديناران", "دينارات", "ديناراً"), ("فلس", "فلسان", "فلس", "فلس")],
 }
@@ -30,8 +30,8 @@ class Num2Word_AR(object):
         self.integer_value = 0
         self._decimalValue = ""
         self.partPrecision = 2
-        self.currency_unit = CURRENCIES['SR'][0]
-        self.currency_subunit = CURRENCIES['SR'][1]
+        self.currency_unit = CURRENCIES['SAR'][0]
+        self.currency_subunit = CURRENCIES['SAR'][1]
         self.isCurrencyPartNameFeminine = True
         self.isCurrencyNameFeminine = False
         self.separator = 'و'
@@ -282,7 +282,7 @@ class Num2Word_AR(object):
 
     def set_currency_prefer(self, currency):
         if currency not in CURRENCIES:
-            currency = 'SR' 
+            currency = 'SAR' 
         self.currency_unit = CURRENCIES[currency][0]
         self.currency_subunit = CURRENCIES[currency][1]
 
