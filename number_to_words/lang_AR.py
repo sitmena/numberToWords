@@ -3,11 +3,11 @@ from decimal import Decimal
 from math import floor
 
 CURRENCIES = {
-    'SAR': [("ريال", "ريال", "ريالات", "ريالاً"), ("هللة", "هللتان", "هللات", "هللة")],
-    'USD': [("دولار", "دولار", "دولارات", "دولاراً"), ("سنت", "سنتان", "سنتات", "سنتاً")],
-    'EUR': [("يورو", "يورو", "يورو", "يورو"), ("سنت", "سنتان", "سنتات", "سنتاً")],
-    'EGP': [("جنيه", "جنيهان", "جنيهات", "جنيهاً"), ("قرش", "قرشان", "قروش", "قرش")],
-    'KWD': [("دينار", "ديناران", "دينارات", "ديناراً"), ("فلس", "فلسان", "فلس", "فلس")],
+    'SAR': [("ريال", "ريالان", "ريالات", "ريالاً"), ("هللة", "هللتان", "هللات", "هللة"), False, True],
+    'USD': [("دولار", "دولاران", "دولارات", "دولاراً"), ("سنت", "سنتان", "سنتات", "سنتاً"), False, False],
+    'EURO': [("يورو", "يورهان", "يوروهات", "يورو"), ("سنت", "سنتان", "سنتات", "سنتاً"), False, False],
+    'EGP': [("جنيه", "جنيهان", "جنيهات", "جنيهاً"), ("قرش", "قرشان", "قروش", "قرش"), False, False],
+    'KWD': [("دينار", "ديناران", "دينارات", "ديناراً"), ("فلس", "فلسان", "فلس", "فلس"), False, False],
 }
 
 ARABIC_ONES = [
@@ -32,13 +32,13 @@ class Num2Word_AR(object):
         self.partPrecision = 2
         self.currency_unit = CURRENCIES['SAR'][0]
         self.currency_subunit = CURRENCIES['SAR'][1]
-        self.isCurrencyPartNameFeminine = True
-        self.isCurrencyNameFeminine = False
+        self.isCurrencyNameFeminine = CURRENCIES['SAR'][2]
+        self.isCurrencyPartNameFeminine = CURRENCIES['SAR'][3]
         self.separator = 'و'
 
         self.arabicOnes = ARABIC_ONES
         self.arabicFeminineOnes = [
-            "", "إحدى", "اثنتان", "ثلاث", "أربع", "خمس", "ست", "سبع", "ثمان",
+            "إحدى", "واحدة", "اثنتان", "ثلاث", "أربع", "خمس", "ست", "سبع", "ثمان",
             "تسع",
             "عشر", "إحدى عشرة", "اثنتا عشرة", "ثلاث عشرة", "أربع عشرة",
             "خمس عشرة", "ست عشرة", "سبع عشرة", "ثماني عشرة",
@@ -166,8 +166,7 @@ class Num2Word_AR(object):
                             hundreds == 0 and remaining_number == 0:
                         ret_val += ""
                     else:
-                        ret_val += self.digit_feminine_status(int(tens),
-                                                              group_level)
+                        ret_val += self.digit_feminine_status(int(tens),group_level)
             else:
                 ones = tens % 10
                 tens = (tens / 10) - 2
@@ -192,9 +191,8 @@ class Num2Word_AR(object):
         if temp_number == Decimal(0):
             return "صفر"
 
-        decimal_string = self.process_arabic_group(self._decimalValue,
-                                                   -1,
-                                                   Decimal(0))
+        decimal_string = self.process_arabic_group(self._decimalValue, -1, Decimal(0))
+        
         ret_val = ""
         group = 0
 
@@ -204,10 +202,7 @@ class Num2Word_AR(object):
                 Decimal(str(temp_number)) % Decimal(str(1000)))
             temp_number = int(Decimal(temp_number) / Decimal(1000))
 
-            group_description = \
-                self.process_arabic_group(number_to_process,
-                                          group,
-                                          Decimal(floor(temp_number)))
+            group_description = self.process_arabic_group(number_to_process,group,Decimal(floor(temp_number)))
             if group_description != '':
                 if group > 0:
                     if ret_val != "":
@@ -227,36 +222,45 @@ class Num2Word_AR(object):
                                         self.arabicGroup[group], ret_val)
 
                         else:
-                            ret_val = "{} {}".format(self.arabicGroup[group],
-                                                     ret_val)
+                            ret_val = "{} {}".format(self.arabicGroup[group],ret_val)
                 ret_val = "{} {}".format(group_description, ret_val)
             group += 1
         formatted_number = ""
         if self.arabicPrefixText != "":
             formatted_number += "{} ".format(self.arabicPrefixText)
         formatted_number += ret_val
+
+
         if self.integer_value != 0:
             remaining100 = int(self.integer_value % 100)
+
+            print("remaining100=", remaining100)
 
             if remaining100 == 0:
                 formatted_number += self.currency_unit[0]
             elif remaining100 == 1:
-                formatted_number += self.currency_unit[0]
+                if self.integer_value == 1:
+                    formatted_number = self.currency_unit[0] + ' ' + formatted_number
+                else:    
+                    formatted_number += self.currency_unit[0]
             elif remaining100 == 2:
                 if self.integer_value == 2:
-                    formatted_number += self.currency_unit[1]
+                    formatted_number = self.currency_unit[1]+ ' '+ formatted_number
                 else:
                     formatted_number += self.currency_unit[0]
             elif 3 <= remaining100 <= 10:
                 formatted_number += self.currency_unit[2]
             elif 11 <= remaining100 <= 99:
                 formatted_number += self.currency_unit[3]
-        if self._decimalValue != 0:
-            formatted_number += " {} ".format(self.separator)
-            formatted_number += decimal_string
 
         if self._decimalValue != 0:
-            formatted_number += " "
+            if  self.integer_value != 0:
+                formatted_number += " {} ".format(self.separator)
+            
+            if self._decimalValue not in [1,2]:
+                formatted_number += decimal_string
+                formatted_number += " "
+            
             remaining100 = int(self._decimalValue % 100)
 
             if remaining100 == 0:
@@ -269,6 +273,10 @@ class Num2Word_AR(object):
                 formatted_number += self.currency_subunit[2]
             elif 11 <= remaining100 <= 99:
                 formatted_number += self.currency_subunit[3]
+                
+            if self._decimalValue in [1,2]:
+                formatted_number += " "
+                formatted_number += decimal_string
 
         if self.arabicSuffixText != "":
             formatted_number += " {}".format(self.arabicSuffixText)
@@ -285,8 +293,10 @@ class Num2Word_AR(object):
             currency = 'SAR' 
         self.currency_unit = CURRENCIES[currency][0]
         self.currency_subunit = CURRENCIES[currency][1]
+        self.isCurrencyNameFeminine = CURRENCIES[currency][2]
+        self.isCurrencyPartNameFeminine = CURRENCIES[currency][3]
 
-    def to_currency(self, value, currency='SR', prefix='', suffix=''):
+    def to_currency(self, value, currency='SAR', prefix='', suffix=''):
         self.set_currency_prefer(currency)
         self.isCurrencyNameFeminine = False
         self.separator = "و"
