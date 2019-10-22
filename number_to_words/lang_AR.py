@@ -234,8 +234,6 @@ class Num2Word_AR(object):
         if self.integer_value != 0:
             remaining100 = int(self.integer_value % 100)
 
-            print("remaining100=", remaining100)
-
             if remaining100 == 0:
                 formatted_number += self.currency_unit[0]
             elif remaining100 == 1:
