@@ -3,8 +3,8 @@ from decimal import Decimal
 from math import floor
 
 CURRENCIES = {
-    'SAR': [("ريال", "ريالان", "ريالات", "ريالاً"), ("هللة", "هللتان", "هللات", "هللة"), False, True],
-    'USD': [("دولار", "دولاران", "دولارات", "دولاراً"), ("سنت", "سنتان", "سنتات", "سنتاً"), False, False],
+    'SAR': [("ريال سعودي", "ريالان سعوديان", "ريالات سعودي", "ريالاً سعودي"), ("هللة", "هللتان", "هللات", "هللة"), False, True],
+    'USD': [("دولار امريكي", "دولاران امريكيان", "دولارات امريكي", "دولاراً امريكي"), ("سنت", "سنتان", "سنتات", "سنتاً"), False, False],
     'EUR': [("يورو", "يورهان", "يوروهات", "يورو"), ("سنت", "سنتان", "سنتات", "سنتاً"), False, False],
     'EGP': [("جنيه", "جنيهان", "جنيهات", "جنيهاً"), ("قرش", "قرشان", "قروش", "قرش"), False, False],
     'KWD': [("دينار", "ديناران", "دينارات", "ديناراً"), ("فلس", "فلسان", "فلس", "فلس"), False, False],
@@ -181,7 +181,7 @@ class Num2Word_AR(object):
         return ret_val
 
     def convert(self, value):
-        self.number = "{:.9f}".format(value)
+        self.number = "{:.2f}".format(value)
         self.number_to_arabic(self.arabicPrefixText, self.arabicSuffixText)
         return self.convert_to_arabic()
 
@@ -192,7 +192,7 @@ class Num2Word_AR(object):
             return "صفر"
 
         decimal_string = self.process_arabic_group(self._decimalValue, -1, Decimal(0))
-        
+
         ret_val = ""
         group = 0
 
